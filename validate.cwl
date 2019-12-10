@@ -8,7 +8,7 @@ baseCommand: python
 
 hints:
   DockerRequirement:
-    dockerPull: python:3.7
+    dockerPull: amancevice/pandas:0.25.2
 
 inputs:
 

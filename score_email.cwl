@@ -8,7 +8,7 @@ baseCommand: python3
 
 hints:
   DockerRequirement:
-    dockerPull: sagebionetworks/synapsepythonclient:v1.9.2
+    dockerPull: sagebionetworks/synapsepythonclient:v1.9.4
 
 inputs:
   - id: submissionid
@@ -58,25 +58,35 @@ requirements:
           evaluation = syn.getEvaluation(sub.evaluationId)
           with open(args.results) as json_data:
             annots = json.load(json_data)
-          if annots.get('prediction_file_status') is None:
-            raise Exception("score.cwl must return prediction_file_status as a json key")
-          status = annots['prediction_file_status']
-          if status == "SCORED":
-              del annots['prediction_file_status']
-              subject = "Submission to '%s' scored!" % evaluation.name
-              if len(annots) == 0:
-                  message = "Your submission has been scored."
-              else:
-                  for annot in args.private_annotaions:
-                      del annots[annot]
-                  message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
-                             "Your submission (%s) is scored, below are your results:\n\n" % sub.name,
-                             "\n".join([i + " : " + str(annots[i]) for i in annots]),
-                             "\n\nSincerely,\nChallenge Administrator"]
-              syn.sendMessage(
-                  userIds=[userid],
-                  messageSubject=subject,
-                  messageBody="".join(message),
-                  contentType="text")
+          if annots.get("validation_and_scoring_error") is None:
+            raise Exception("score.cwl must return `validation_and_scoring_error` as a json key")
+          for annot in args.private_annotaions:
+            del annots[annot]
+          if not annots["validation_and_scoring_error"]:
+            del annots["validation_and_scoring_error"]
+            subject = "Submission to '%s' scored!" % evaluation.name
+            message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
+                       "Your submission (%s) is scored, below are your results:\n\n" % sub.name,
+                       "\n".join([i + " : " + str(annots[i]) for i in annots]),
+                       "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
+          else:
+            subject = "Submission to '%s' is invalid" % evaluation.name
+            if "problems" in annots: # we had trouble reading the input as csv
+                message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
+                           "We were unable to read your submission (%s) as a CSV file.\n\n" % sub.name,
+                           "Below is a JSON summary of the parsing issues we encountered:\n\n",
+                           json.dumps(annots["problems"], indent=2),
+                           "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
+            else: # some other issue
+                message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
+                           "We encountered the following problem with your submission (%s)\n\n" % sub.name,
+                           annots["message"],
+                           "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
+          syn.sendMessage(
+              userIds=[userid],
+              messageSubject=subject,
+              messageBody="".join(message),
+              contentType="text")
+
           
 outputs: []

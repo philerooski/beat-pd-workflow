@@ -44,82 +44,21 @@ steps:
       - id: entity_id
       - id: entity_type
       - id: results
-      
-  download_goldstandard:
-    run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/v0.1/synapse-get-tool.cwl
-    in:
-      - id: synapseid
-        #This is a dummy syn id, replace when you use your own workflow
-        valueFrom: "syn18081597"
-      - id: synapse_config
-        source: "#synapseConfig"
-    out:
-      - id: filepath
 
-  validation:
-    run: validate.cwl
+  validation_and_scoring:
+    run: validate_and_score.cwl
     in:
       - id: inputfile
         source: "#download_submission/filepath"
-      - id: entity_type
-        source: "#download_submission/entity_type"
-    out:
-      - id: results
-      - id: status
-      - id: invalid_reasons
-  
-  validation_email:
-    run: validate_email.cwl
-    in:
-      - id: submissionid
-        source: "#submissionId"
+      - id: script_path
+        valueFrom: "/root/beat-pd/scoring_code/BEAT-PD_Scoring_Code.R"
+      - id: phenotype 
+        valueFrom: "on_off" # change depending on submission queue we receive submissions from
       - id: synapse_config
         source: "#synapseConfig"
-      - id: status
-        source: "#validation/status"
-      - id: invalid_reasons
-        source: "#validation/invalid_reasons"
-
-    out: [finished]
-
-  annotate_validation_with_output:
-    run: annotate_submission.cwl
-    in:
-      - id: submissionid
-        source: "#submissionId"
-      - id: annotation_values
-        source: "#validation/results"
-      - id: to_public
-        default: true
-      - id: force_change_annotation_acl
-        default: true
-      - id: synapse_config
-        source: "#synapseConfig"
-    out: [finished]
-
-  check_status:
-    run: check_status.cwl
-    in:
-      - id: status
-        source: "#validation/status"
-      - id: previous_annotation_finished
-        source: "#annotate_validation_with_output/finished"
-      - id: previous_email_finished
-        source: "#validation_email/finished"
-    out: [finished]
-
-  scoring:
-    run: score.cwl
-    in:
-      - id: inputfile
-        source: "#download_submission/filepath"
-      - id: goldstandard
-        source: "#download_goldstandard/filepath"
-      - id: check_validation_finished 
-        source: "#check_status/finished"
     out:
       - id: results
-      
+
   score_email:
     run: score_email.cwl
     in:
@@ -128,7 +67,7 @@ steps:
       - id: synapse_config
         source: "#synapseConfig"
       - id: results
-        source: "#scoring/results"
+        source: "#validation_and_scoring/results"
     out: []
 
   annotate_submission_with_output:
@@ -137,14 +76,12 @@ steps:
       - id: submissionid
         source: "#submissionId"
       - id: annotation_values
-        source: "#scoring/results"
+        source: "#validation_and_scoring/results"
       - id: to_public
         default: true
       - id: force_change_annotation_acl
         default: true
       - id: synapse_config
         source: "#synapseConfig"
-      - id: previous_annotation_finished
-        source: "#annotate_validation_with_output/finished"
     out: [finished]
  

@@ -25,8 +25,6 @@ inputs:
     type: boolean?
   - id: synapse_config
     type: File
-  - id: previous_annotation_finished
-    type: boolean?
 
 arguments:
   - valueFrom: $(inputs.synapse_config.path)
