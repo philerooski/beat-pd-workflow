@@ -8,7 +8,7 @@ baseCommand: ['Rscript', '/beat-pd/scoring_code/BEAT-PD_Scoring_Code.R']
 
 hints:
   DockerRequirement:
-    dockerPull: philsnyder/beat-pd-scoring
+    dockerPull: philsnyder/beat-pd-scoring:latest
 
 inputs:
   - id: inputfile

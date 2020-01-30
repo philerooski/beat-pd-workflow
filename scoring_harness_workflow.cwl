@@ -53,7 +53,7 @@ steps:
       - id: script_path
         valueFrom: "/root/beat-pd/scoring_code/BEAT-PD_Scoring_Code.R"
       - id: phenotype 
-        valueFrom: "on_off" # change depending on submission queue we receive submissions from
+        valueFrom: "tremor" # change depending on submission queue we receive submissions from
       - id: synapse_config
         source: "#synapseConfig"
     out:
@@ -78,7 +78,7 @@ steps:
       - id: annotation_values
         source: "#validation_and_scoring/results"
       - id: to_public
-        default: true
+        default: false
       - id: force_change_annotation_acl
         default: true
       - id: synapse_config

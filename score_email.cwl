@@ -47,8 +47,8 @@ requirements:
           parser.add_argument("-s", "--submissionid", required=True, help="Submission ID")
           parser.add_argument("-c", "--synapse_config", required=True, help="credentials file")
           parser.add_argument("-r", "--results", required=True, help="Resulting scores")
-          parser.add_argument("-p", "--private_annotaions", nargs="+", default=[], help="annotations to not be sent via e-mail")
-
+          parser.add_argument("-p", "--private_annotaions", nargs="+",
+                              default=[], help="annotations to not be sent via e-mail")
           args = parser.parse_args()
           syn = synapseclient.Synapse(configPath=args.synapse_config)
           syn.login()
@@ -64,10 +64,22 @@ requirements:
             del annots[annot]
           if not annots["validation_and_scoring_error"]:
             del annots["validation_and_scoring_error"]
-            subject = "Submission to '%s' scored!" % evaluation.name
+            # We do not report score to participant
+            #
+            #subject = "Submission to '%s' scored!" % evaluation.name
+            #message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
+            #           "Your submission (%s) is scored, below are your results:\n\n" % sub.name,
+            #           "\n".join([i + " : " + str(annots[i]) for i in annots]),
+            #           "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
+            subject = "Submission to {} is valid!".format(evaluation.name)
             message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
-                       "Your submission (%s) is scored, below are your results:\n\n" % sub.name,
-                       "\n".join([i + " : " + str(annots[i]) for i in annots]),
+                       "Your submission (%s) is valid and has been scored. " % sub.name,
+                       "At the end of the current round, you will receive an email "
+                       "containing the model rank, and whether the model performed "
+                       "better than the null model. In the event that you submit "
+                       "additional models before the round deadline, you will only "
+                       "receive this information for the last valid model submitted "
+                       "prior to the deadline."
                        "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
           else:
             subject = "Submission to '%s' is invalid" % evaluation.name
