@@ -55,7 +55,7 @@ steps:
       - id: script_path
         valueFrom: "/root/beat-pd/scoring_code/BEAT-PD_Scoring_Code.R"
       - id: phenotype 
-        valueFrom: "tremor" # change depending on submission queue we receive submissions from
+        valueFrom: "on_off" # change depending on submission queue we receive submissions from
       - id: synapse_config
         source: "#synapseConfig"
     out:
