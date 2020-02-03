@@ -73,14 +73,14 @@ requirements:
             #           "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
             subject = "Submission to {} is valid!".format(evaluation.name)
             message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
-                       "Your submission (%s) is valid and has been scored. " % sub.name,
+                       "Your submission (%s) is valid and has been scored.\n\n" % sub.name,
                        "At the end of the current round, you will receive an email "
                        "containing the model rank, and whether the model performed "
                        "better than the null model. In the event that you submit "
                        "additional models before the round deadline, you will only "
                        "receive this information for the last valid model submitted "
                        "prior to the deadline."
-                       "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
+                       "\n\nSincerely,\nThe BEAT-PD Challenge Administrator"]
           else:
             subject = "Submission to '%s' is invalid" % evaluation.name
             if "problems" in annots: # we had trouble reading the input as csv
@@ -93,7 +93,7 @@ requirements:
                 message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
                            "We encountered the following problem with your submission (%s)\n\n" % sub.name,
                            annots["message"],
-                           "\n\nSincerely,\nBEAT-PD Challenge Administrator"]
+                           "\n\nSincerely,\nThe BEAT-PD Challenge Administrator"]
           syn.sendMessage(
               userIds=[userid],
               messageSubject=subject,
