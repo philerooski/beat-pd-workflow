@@ -12,7 +12,9 @@ hints:
 
 inputs:
   - id: inputfile
-    type: File
+    type: File?
+  - id: entity_type
+    type: string
   - id: phenotype 
     type: string
   - id: write_output_to_file
@@ -22,8 +24,10 @@ inputs:
     type: File
 
 arguments:
-  - valueFrom: $(inputs.inputfile.path)
+  - valueFrom: $(inputs.inputfile)
     prefix: --submission_file
+  - valueFrom: $(inputs.entity_type)
+    prefix: --entity_type
   - valueFrom: $(inputs.phenotype)
     prefix: --phenotype
   - valueFrom: $(inputs.write_output_to_file)

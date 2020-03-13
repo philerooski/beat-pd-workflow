@@ -50,6 +50,8 @@ steps:
     in:
       - id: inputfile
         source: "#download_submission/filepath"
+      - id: entity_type
+        source: "#download_submission/entity_type"
       - id: script_path
         valueFrom: "/root/beat-pd/scoring_code/BEAT-PD_Scoring_Code.R"
       - id: phenotype 
